@@ -1,17 +1,18 @@
 ---
 name: reddit-scout
-description: Find recent Reddit threads where a Pekin the Chef reply would help (meal prep, dinner ideas, recipe sites, popular recipe posts), triage them, and draft replies in Rhys's voice.
+description: Find recent Reddit threads where a Pekin the Chef reply would help (meal prep, dinner ideas, copycat and restaurant-recipe requests, recipe sites), triage them, and draft replies in Rhys's voice.
 ---
 
 # Reddit scout for Pekin the Chef
 
-Pulls fresh Reddit threads through the **reddit-scout** connector (tools: `scout_feed`, `search_posts`, `list_new`, `get_post`, `subreddit_rules`), shortlists the ones worth answering, and drafts replies on request.
+Pulls fresh Reddit threads through the **reddit-scout** connector (tools: `scout_feed`, `search_posts`, `list_new`, `get_post`, `subreddit_rules`), shortlists the ones worth answering, and drafts a proposed reply for each.
 
 If the connector's tools aren't available, say so in one line and ask the user to enable the reddit-scout connector for this chat. Don't fall back to web search; it returns stale, undated results.
 
 ## 1. Pull
 
 - Default: call `scout_feed` with no arguments (built-in keyword list, food subreddits, past week).
+- The user asks for copycat / restaurant-recipe requests → `scout_feed` with the copycat keywords, plus `list_new` on TopSecretRecipes and `search_posts` for "copycat" with `subreddits: []` to catch local city subs.
 - The user names a topic → `search_posts` with that query (sort `new`, time `week` unless they say otherwise).
 - The user names a subreddit → pass it in `subreddits`.
 - The user wants something broader → `scout_feed` with `subreddits: []` (all of Reddit).
@@ -66,7 +67,7 @@ Then wait for his take on each post.
 1. Call `subreddit_rules` for that subreddit (even if it was checked during triage) and `get_post` for the thread.
 2. Read every rule, not just the self-promotion one. Look for: self-promotion, links/external domains, AI-generated content, required formats, topic scope, no-DM rules, flair restrictions (e.g. no recipe requests on Showcase posts), and anything stickied or in the post flair that limits replies.
 3. Apply the strictest reading:
-   - **AI-written comments banned** → don't draft. Give a few bullet points of ideas Rhys can write up himself, and say why.
+   - **AI-written comments banned** → still draft (Rhys writes his own final comment), but label it "rewrite in your own words before posting" and never suggest pasting it as-is.
    - **Self-promotion banned** (including naming a site or brand without a link) → no Pekin mention at all, not even unlinked.
    - **Self-promotion limited/allowed** → only mention Pekin if it's genuinely the answer (e.g. the poster asks for recipe sites); Rhys usually leaves it out. If used: at most once, near the end, disclosed as Rhys's own project (e.g. "full disclosure, I run it"). Unlinked unless the rules clearly allow links.
    - **Links restricted** → no links of any kind.
