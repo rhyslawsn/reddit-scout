@@ -38,6 +38,14 @@ export const DEFAULT_KEYWORDS: string[] = [
   "dinner rotation",
   "copycat recipe",
   "meal plan",
+  // Copycat / restaurant-recipe requests
+  "copycat",
+  "restaurant recipe",
+  "restaurant style",
+  "recreate at home",
+  "like the restaurant",
+  "recipe from restaurant",
+  "how do restaurants make",
 ];
 
 export const DEFAULT_SUBREDDITS: string[] = [
@@ -53,4 +61,6 @@ export const DEFAULT_SUBREDDITS: string[] = [
   "AskCulinary",
   "cookingforbeginners",
   "Cooking_for_one",
+  "TopSecretRecipes",
+  "IndianCookingTips",
 ];
