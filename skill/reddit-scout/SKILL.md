@@ -32,7 +32,8 @@ Drop:
 - Posters who say they **don't enjoy cooking** or want zero-effort food (frozen meals, no chopping, "lazy meals"). Not Pekin's audience.
 - Posts older than 7 days unless the thread is still active.
 - Posts about cooking for babies, toddlers or young kids.
-- Copycat requests already answered (a top comment names the exact product or recipe and the poster seems satisfied).
+- Copycat requests that already have a clear single answer in the comments.
+- Copycat requests for a **named restaurant that isn't on Pekin** (and can't be added). Only keep named-restaurant requests where Pekin has the restaurant and a matching recipe.
 - Likely bot posts (brand-new account, generic question, commenters calling it a bot).
 - Locked/archived threads, memes, rants, health/medical, weight-loss diet, or sensitive family/feeding situations where a food-business reply would read as tone-deaf.
 - Threads where the poster has already thanked everyone and summarised the answers.
@@ -77,6 +78,8 @@ Then wait for his take on each post.
 
 Also:
 - Answer what was actually asked and don't repeat top comments; build on them if they're close.
+- Named-restaurant copycat requests: look the restaurant up on Pekin first (see "Pekin lookup" below). Base the reply on Pekin's recipe (ingredients, ratios, method) so the answer is concrete. Where self-promo is banned, don't name or link Pekin; just give the recipe in Rhys's words.
+- Generic "restaurant-style" asks (a dish type, not a specific restaurant): answer with technique; no Pekin lookup needed.
 - Copycat requests: never claim insider knowledge or that Rhys has eaten somewhere. Offer an honest best guess ("haven't had theirs, but if it's creamy and slightly sweet I'd start with…") with specific ingredients and ratios.
 - Links: only if the rules allow outside links and the site doesn't need a login (several subs ban Instagram/Facebook/TikTok links). Never link Pekin.
 - Personal details: use only what Rhys has actually said about himself (e.g. weekly menus, lived in small-town Canada last year). Never invent backstory.
@@ -84,6 +87,10 @@ Also:
 - Don't reuse the same text across threads; Reddit flags near-identical comments as spam. Vary wording and tailor to each post.
 - If Rhys pastes his own reply and it would break a rule, say which rule and suggest the compliant version.
 - Never post to Reddit. Rhys posts his own replies.
+
+### Pekin lookup
+
+Restaurant pages live at `https://pekinthechef.com/{restaurant-slug}` (slug = name lowercased, spaces and punctuation removed, e.g. The Public Kitchen & Bar → `thepublickitchenbar`) and list every recipe; recipe pages are `/{restaurant-slug}/{recipe-slug}`. Fetch the restaurant page with WebFetch; try a couple of slug variants. If nothing is found, say "not on Pekin" and drop the post. (Interim method until a lookup tool is added to the connector.)
 
 ### Rhys's voice
 
@@ -121,7 +128,9 @@ These show voice and structure only. Step 4's rules still apply when reusing the
 
 Earlier, where the rules allowed a mention ("moved out alone, want to plan meals cheaply", r/EatCheapAndHealthy): weekly menus framed around keeping prices low and using everything bought, ending with looking up copycats of favourite local restaurants on Pekin the Chef (add a disclosure that he runs it).
 
-Skipped: a couple who "don't enjoy cooking" (not the audience); a friend learning to cook for a toddler and newborn (cooking for kids).
+Approved as drafted (copycat batch): restaurant-style pav bhaji technique; Daikokuya-style Kewpie sesame dressing guess; bread-machine flavour tips; mandarin chicken gravy roux fix.
+
+Skipped: named-restaurant requests not on Pekin (Fiji Islands, Gambino's); Tudor's biscuits (clear single answer already given); a couple who "don't enjoy cooking" (not the audience); a friend learning to cook for a toddler and newborn (cooking for kids).
 
 ## Learning from the user
 
