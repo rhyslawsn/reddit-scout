@@ -10,12 +10,12 @@ Gets the real ingredients and method for a Pekin recipe so anything written abou
 ## How
 
 1. Need a URL or id first? Use the **pekin-lookup** skill.
-2. Call `pekin_recipe` from the **reddit-scout** connector with the pekinthechef.com URL (`/{restaurant-slug}/{recipe-slug}`) or the numeric id. Load it with ToolSearch if deferred.
+2. Call `pekin_recipe` from the **reddit-scout** connector with the pekinthechef.com URL (`/{restaurant-slug}/{recipe-slug}`). It reads the public Pekin API, the same data the recipe page shows. Load it with ToolSearch if deferred.
 3. It returns `title`, `restaurant`, `url`, `description`, `servings`, `estimated_minutes`, `ingredients` and `directions`. Ingredients and directions come in sections:
    - ingredients: `[{ section, ingredients: [{ name, quantity, unit }] }]`
    - directions: `[{ section, directions: [{ title, description }] }]`
    Older recipes may return flat string lists instead; handle both.
-4. Error "Recipe not found on Pekin" means the id/URL is wrong or the recipe is delisted.
+4. Error "Recipe not found on Pekin" means the URL is wrong or the recipe was removed.
 
 ## Fallback (connector not available)
 

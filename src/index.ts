@@ -6,6 +6,7 @@ import { z } from "zod";
 import { RedditClient, type RedditPost } from "./reddit.js";
 import { DEFAULT_KEYWORDS, DEFAULT_SUBREDDITS } from "./config.js";
 import { PekinDb } from "./pekin.js";
+import { PekinSearch, fetchPekinRecipe } from "./pekin-search.js";
 
 const {
   REDDIT_CLIENT_ID,
@@ -13,9 +14,18 @@ const {
   REDDIT_USERNAME,
   MCP_PATH_TOKEN,
   PEKIN_DATABASE_URL,
+  TYPESENSE_URL,
+  TYPESENSE_SEARCH_KEY,
+  TYPESENSE_COLLECTION,
+  PEKIN_API_URL = "https://api.pekinthechef.com",
   PORT = "3000",
 } = process.env;
 
+// Lookup: Typesense mirror preferred (fast, typo-tolerant); Postgres as fallback.
+const pekinSearch =
+  TYPESENSE_URL && TYPESENSE_SEARCH_KEY && TYPESENSE_COLLECTION
+    ? new PekinSearch(TYPESENSE_URL, TYPESENSE_SEARCH_KEY, TYPESENSE_COLLECTION)
+    : null;
 const pekin = PEKIN_DATABASE_URL ? new PekinDb(PEKIN_DATABASE_URL) : null;
 
 if (!REDDIT_CLIENT_ID || !REDDIT_CLIENT_SECRET || !REDDIT_USERNAME) {
@@ -179,15 +189,15 @@ function buildServer(): McpServer {
     },
   );
 
-  if (pekin) {
+  if (pekinSearch || pekin) {
     server.registerTool(
       "pekin_lookup",
       {
         description:
-          "Check whether Pekin the Chef has a restaurant and/or dish. Use before answering a copycat request for a named restaurant: if the restaurant isn't on Pekin, skip the post. Matching ignores case, spaces and punctuation.",
+          "Check whether Pekin the Chef has a restaurant and/or dish. Use before answering a copycat request for a named restaurant: if the restaurant isn't on Pekin, skip the post. Name matching tolerates typos, spacing and punctuation.",
         inputSchema: {
           restaurant: z.string().optional().describe("Restaurant name, e.g. 'The Public Kitchen & Bar'"),
-          dish: z.string().optional().describe("Dish name or keyword, e.g. 'shrimp grits'"),
+          dish: z.string().optional().describe("Dish name or keywords, e.g. 'shrimp grits'"),
           city: z.string().optional().describe("Narrow by city, e.g. 'Savannah'"),
           limit: z.number().int().min(1).max(25).optional(),
         },
@@ -195,29 +205,41 @@ function buildServer(): McpServer {
       async (args) => {
         if (!args.restaurant && !args.dish) return asError("Give a restaurant, a dish, or both.");
         try {
-          return asText(await pekin.lookup(args));
-        } catch (e) {
-          return asError(e);
-        }
-      },
-    );
-
-    server.registerTool(
-      "pekin_recipe",
-      {
-        description:
-          "Full Pekin recipe (ingredients and directions) by recipe id or pekinthechef.com URL. Use to base a Reddit reply on Pekin's version of a dish.",
-        inputSchema: { id_or_url: z.string() },
-      },
-      async ({ id_or_url }) => {
-        try {
-          return asText(await pekin.recipe(id_or_url));
+          if (pekinSearch) {
+            try {
+              return asText(await pekinSearch.lookup(args));
+            } catch (e) {
+              if (!pekin) throw e;
+              console.error("Typesense lookup failed, falling back to Postgres:", e);
+            }
+          }
+          return asText({ source: "postgres", ...(await pekin!.lookup(args)) });
         } catch (e) {
           return asError(e);
         }
       },
     );
   }
+
+  server.registerTool(
+    "pekin_recipe",
+    {
+      description:
+        "Full Pekin recipe (ingredients with quantities, directions, servings, time) from a pekinthechef.com recipe URL. Use to base a reply or other content on Pekin's version of a dish.",
+      inputSchema: { url: z.string().describe("https://pekinthechef.com/{restaurant}/{dish}, or a numeric recipe id if the database is configured") },
+    },
+    async ({ url }) => {
+      try {
+        if (/^\d+$/.test(url.trim())) {
+          if (!pekin) return asError("Recipe ids need PEKIN_DATABASE_URL; pass the recipe URL instead.");
+          return asText(await pekin.recipe(url.trim()));
+        }
+        return asText(await fetchPekinRecipe(url, PEKIN_API_URL));
+      } catch (e) {
+        return asError(e);
+      }
+    },
+  );
 
   return server;
 }

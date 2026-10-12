@@ -91,8 +91,8 @@ Also:
 ### Pekin lookup
 
 Use the **pekin-lookup** skill (or the connector's `pekin_lookup` tool directly), then the **pekin-recipe** skill for the full recipe:
-- `note: "Restaurant not on Pekin."` → drop the post.
-- Restaurant found but `"No matching dish found."` → drop, or ask Rhys if a close dish works.
+- `note: "Restaurant not on Pekin."`, or only `possible_matches` look-alikes → drop the post.
+- Restaurant found but no `match: "all words"` dish → drop, or ask Rhys if a close dish works.
 - Dish found → call `pekin_recipe` with its URL and build the reply from those ingredients, ratios and steps, in Rhys's words.
 
 If `pekin_lookup` isn't available (connector not configured), fall back to fetching `https://pekinthechef.com/{restaurant-slug}` with WebFetch (slug = name lowercased, spaces and punctuation removed, e.g. The Public Kitchen & Bar → `thepublickitchenbar`).

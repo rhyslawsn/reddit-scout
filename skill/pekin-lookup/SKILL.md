@@ -9,16 +9,17 @@ Answers one question: **is this restaurant and/or dish on Pekin, and where?**
 
 ## How
 
-1. Use the `pekin_lookup` tool from the **reddit-scout** connector (it reads the Pekin database, read-only). Load it with ToolSearch if it's deferred.
+1. Use the `pekin_lookup` tool from the **reddit-scout** connector. It searches the Typesense mirror of the Pekin database (fast, typo-tolerant; delisted recipes aren't indexed). Load it with ToolSearch if it's deferred.
    - `restaurant`: the name as people write it ("The Public", "Daikokuya"). Matching ignores case, spaces and punctuation.
-   - `dish`: a dish name or keywords ("shrimp grits"). Filler words like "and"/"the" are ignored, and every remaining word must appear in the title.
+   - `dish`: a dish name or keywords ("shrimp grits"). Filler words like "and"/"the" are ignored.
    - `city`: add it when the name is common or ambiguous ("Savannah").
    - Pass a restaurant, a dish, or both. Dish-only searches across all restaurants.
 2. Read the result:
    - `note: "Restaurant not on Pekin."` → it isn't there. Say so plainly.
+   - `possible_matches` with no `restaurants` → only fuzzy look-alikes (e.g. "Fiji Islands" → "Fiji Mermaid Grill"). Treat as not on Pekin unless the name, city and dishes clearly line up; never present a look-alike as the same place.
    - `restaurants` found but `note: "No matching dish found."` → the restaurant is there, the dish isn't. List the closest titles if you look them up, but don't claim a match.
-   - `dishes` → each has `title`, `restaurant`, `city` and `url`. If several match, pick by restaurant and city, or show the options.
-3. Delisted recipes never appear; treat them as not on Pekin.
+   - `dishes` → each has `title`, `restaurant`, `city`, `url` and `match`. Only `match: "all words"` is a real match; `"partial"` hits are related dishes, not the one asked for. If several match, pick by restaurant and city, or show the options.
+3. `city` can be empty for some restaurants; don't drop a match just because city is missing.
 
 ## Fallback (connector not available)
 
