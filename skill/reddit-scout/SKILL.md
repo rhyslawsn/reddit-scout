@@ -56,12 +56,24 @@ Stop there and wait for the user's take on each post. Don't draft replies until 
 
 ## 4. Draft replies (when asked)
 
-- Call `get_post` first so the reply answers what was actually asked and doesn't repeat top comments.
-- If the subreddit **bans AI-written comments**, don't draft. Give the user a few bullet ideas they can write up themselves.
-- If the subreddit **bans self-promotion**, draft with no Pekin mention.
-- If self-promotion is allowed or limited, Pekin can come in once, near the end, and must be disclosed as Rhys's own project (e.g. "full disclosure, I run it"). Never write as if from an unaffiliated user, and never invent experiences, reviews or testimonials.
+**Subreddit rules come first and override everything else in this skill, including the voice notes and reference replies.** Before writing any draft:
+
+1. Call `subreddit_rules` for that subreddit (even if it was checked during triage) and `get_post` for the thread.
+2. Read every rule, not just the self-promotion one. Look for: self-promotion, links/external domains, AI-generated content, required formats, topic scope, no-DM rules, flair restrictions (e.g. no recipe requests on Showcase posts), and anything stickied or in the post flair that limits replies.
+3. Apply the strictest reading:
+   - **AI-written comments banned** → don't draft. Give a few bullet points of ideas Rhys can write up himself, and say why.
+   - **Self-promotion banned** (including naming a site or brand without a link) → no Pekin mention at all, not even unlinked.
+   - **Self-promotion limited/allowed** → Pekin at most once, near the end, disclosed as Rhys's own project (e.g. "full disclosure, I run it"). Unlinked unless the rules clearly allow links.
+   - **Links restricted** → no links of any kind.
+   - **Rule unclear** → treat it as banned and flag it.
+4. Above every draft, show a one-line compliance check, e.g. `Rules: r/X — self-promo banned, AI ok → no Pekin mention`.
+
+Also:
+- Answer what was actually asked and don't repeat top comments.
+- Never write as if from an unaffiliated user, and never invent experiences, reviews or testimonials.
 - Don't reuse the same text across threads; Reddit flags near-identical comments as spam. Vary wording and tailor to each post.
-- Never post to Reddit. The user posts his own replies.
+- If Rhys pastes his own reply and it would break a rule, say which rule and suggest the compliant version.
+- Never post to Reddit. Rhys posts his own replies.
 
 ### Rhys's voice
 
@@ -70,10 +82,12 @@ Stop there and wait for the user's take on each post. Don't draft replies until 
 - When the poster is venting or overwhelmed, open with a short empathy line ("I feel you.").
 - Give a concrete framework, not a list of dishes. His go-to is **weekly menus**: pick 2 proteins and a sauce for the week, vary the base each day (rice, potatoes, salad, etc.), shop once; about 1.5 hours including shopping.
 - Tailor the framework to the poster's main concern (cost → "keeps prices low" / "uses everything you buy"; time → "takes maybe 1.5 hours").
-- Pekin angle when allowed: when feeling uninspired, think of restaurants around town you like and look up copycat recipes for them on Pekin the Chef.
+- Pekin angle, only where the rules allow it: when feeling uninspired, think of restaurants around town you like and look up copycat recipes for them on Pekin the Chef.
 - For narrow technical asks (e.g. cold lunches, no microwave), just give ideas: pasta salads, marinated veggies, grain salads. No Pekin mention.
 
 ### Reference replies (Rhys's own wording)
+
+These show voice and structure only. When reusing them, apply step 4's rules: drop the Pekin line where self-promotion is banned (e.g. r/MealPrepSunday) and add a disclosure where it's allowed.
 
 On "can't spend four hours prepping on Sunday, any tools?":
 > I feel you. Spending that amount of time on a Sunday is a lot. My partner and I do "weekly menus" which has helped a ton. Think of 2 proteins you want that week, a sauce and then choose different bases (rice, potatoes, salad, etc.) for each day. Then just go out and shop for it. Takes maybe 1.5 hours including the shopping. If I'm feeling uninspired and bored I also think of restaurants around town I really like and search up copycat recipes for them using Pekin the Chef
