@@ -32,6 +32,7 @@ Drop:
 - Likely bot posts (brand-new account, generic question, commenters calling it a bot).
 - Locked/archived threads, memes, rants, health/medical, weight-loss diet, or sensitive family/feeding situations where a food-business reply would read as tone-deaf.
 - Threads where the poster has already thanked everyone and summarised the answers.
+- Threads where Pekin, HelloFresh or similar services have already been mentioned several times.
 
 Rank: help requests first, then recency, then comment count.
 
