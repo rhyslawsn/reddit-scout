@@ -1,6 +1,6 @@
 ---
 name: pekin-recipe
-description: Pull a full Pekin the Chef recipe (ingredients with quantities, directions, servings, time) by pekinthechef.com URL or recipe id. Use when a reply, newsletter blurb, pairing note or other content needs to be grounded in what's actually in a Pekin recipe.
+description: Pull a full Pekin the Chef recipe (ingredients with quantities, directions, servings, time) by pekinthechef.com URL. Use when a reply, newsletter blurb, pairing note or other content needs to be grounded in what's actually in a Pekin recipe.
 ---
 
 # Pekin recipe
@@ -9,7 +9,7 @@ Gets the real ingredients and method for a Pekin recipe so anything written abou
 
 ## How
 
-1. Need a URL or id first? Use the **pekin-lookup** skill.
+1. Need a URL first? Use the **pekin-lookup** skill.
 2. Call `pekin_recipe` from the **reddit-scout** connector with the pekinthechef.com URL (`/{restaurant-slug}/{recipe-slug}`). It reads the public Pekin API, the same data the recipe page shows. Load it with ToolSearch if deferred.
 3. It returns `title`, `restaurant`, `url`, `description`, `servings`, `estimated_minutes`, `ingredients` and `directions`. Ingredients and directions come in sections:
    - ingredients: `[{ section, ingredients: [{ name, quantity, unit }] }]`
