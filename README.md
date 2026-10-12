@@ -13,6 +13,8 @@ Claude can't reach Reddit directly, so this server does the fetching with your o
 | `list_new` | Newest posts in given subreddits |
 | `get_post` | Full post text + top comments (ID or URL) |
 | `subreddit_rules` | A subreddit's rules, to check self-promotion policy |
+| `pekin_lookup` | Is this restaurant / dish on Pekin? (only when `PEKIN_DATABASE_URL` is set) |
+| `pekin_recipe` | Full Pekin recipe by id or pekinthechef.com URL |
 
 All read-only. NSFW, removed and stickied posts are filtered out. Nothing here can post or comment.
 
@@ -34,9 +36,23 @@ Use your existing app at <https://www.reddit.com/prefs/apps>. "Web app" or "scri
    | `REDDIT_USERNAME` | your Reddit username (goes in the User-Agent Reddit requires) |
    | `MCP_PATH_TOKEN` | a random string, e.g. `openssl rand -hex 24` |
 
-3. Settings → Networking → Generate domain. Visiting `https://<domain>/` should return `{"ok":true}`.
+3. Optional, for `pekin_lookup` / `pekin_recipe`: add `PEKIN_DATABASE_URL`, a connection string for the Pekin Postgres using a **read-only** role (see below). Every query also runs in a read-only transaction with an 8s timeout.
+4. Settings → Networking → Generate domain. Visiting `https://<domain>/` should return `{"ok":true}`.
 
 Any Node 20+ host works the same way (Render, Fly, a VPS): `npm ci && npm run build && npm start`.
+
+#### Read-only database role
+
+The Pekin DB lives in a different Railway project, so use its public connection string (Postgres service → Variables → `DATABASE_PUBLIC_URL`) with a dedicated role instead of the admin user. Run once against the Pekin DB:
+
+```sql
+CREATE ROLE reddit_scout_ro LOGIN PASSWORD '<generate one>';
+GRANT CONNECT ON DATABASE railway TO reddit_scout_ro;
+GRANT USAGE ON SCHEMA public TO reddit_scout_ro;
+GRANT SELECT ON public.users, public.recipes TO reddit_scout_ro;
+```
+
+Then set `PEKIN_DATABASE_URL=postgresql://reddit_scout_ro:<password>@<public host>:<port>/railway` on the reddit-scout service.
 
 ### 3. Add the connector in Claude
 

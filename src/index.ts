@@ -5,14 +5,18 @@ import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/
 import { z } from "zod";
 import { RedditClient, type RedditPost } from "./reddit.js";
 import { DEFAULT_KEYWORDS, DEFAULT_SUBREDDITS } from "./config.js";
+import { PekinDb } from "./pekin.js";
 
 const {
   REDDIT_CLIENT_ID,
   REDDIT_CLIENT_SECRET,
   REDDIT_USERNAME,
   MCP_PATH_TOKEN,
+  PEKIN_DATABASE_URL,
   PORT = "3000",
 } = process.env;
+
+const pekin = PEKIN_DATABASE_URL ? new PekinDb(PEKIN_DATABASE_URL) : null;
 
 if (!REDDIT_CLIENT_ID || !REDDIT_CLIENT_SECRET || !REDDIT_USERNAME) {
   console.error("Missing REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET or REDDIT_USERNAME");
@@ -174,6 +178,46 @@ function buildServer(): McpServer {
       }
     },
   );
+
+  if (pekin) {
+    server.registerTool(
+      "pekin_lookup",
+      {
+        description:
+          "Check whether Pekin the Chef has a restaurant and/or dish. Use before answering a copycat request for a named restaurant: if the restaurant isn't on Pekin, skip the post. Matching ignores case, spaces and punctuation.",
+        inputSchema: {
+          restaurant: z.string().optional().describe("Restaurant name, e.g. 'The Public Kitchen & Bar'"),
+          dish: z.string().optional().describe("Dish name or keyword, e.g. 'shrimp grits'"),
+          city: z.string().optional().describe("Narrow by city, e.g. 'Savannah'"),
+          limit: z.number().int().min(1).max(25).optional(),
+        },
+      },
+      async (args) => {
+        if (!args.restaurant && !args.dish) return asError("Give a restaurant, a dish, or both.");
+        try {
+          return asText(await pekin.lookup(args));
+        } catch (e) {
+          return asError(e);
+        }
+      },
+    );
+
+    server.registerTool(
+      "pekin_recipe",
+      {
+        description:
+          "Full Pekin recipe (ingredients and directions) by recipe id or pekinthechef.com URL. Use to base a Reddit reply on Pekin's version of a dish.",
+        inputSchema: { id_or_url: z.string() },
+      },
+      async ({ id_or_url }) => {
+        try {
+          return asText(await pekin.recipe(id_or_url));
+        } catch (e) {
+          return asError(e);
+        }
+      },
+    );
+  }
 
   return server;
 }

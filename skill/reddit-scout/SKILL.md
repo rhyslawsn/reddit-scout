@@ -5,7 +5,7 @@ description: Find recent Reddit threads where a Pekin the Chef reply would help 
 
 # Reddit scout for Pekin the Chef
 
-Pulls fresh Reddit threads through the **reddit-scout** connector (tools: `scout_feed`, `search_posts`, `list_new`, `get_post`, `subreddit_rules`), shortlists the ones worth answering, and drafts a proposed reply for each.
+Pulls fresh Reddit threads through the **reddit-scout** connector (tools: `scout_feed`, `search_posts`, `list_new`, `get_post`, `subreddit_rules`, `pekin_lookup`, `pekin_recipe`), shortlists the ones worth answering, and drafts a proposed reply for each.
 
 If the connector's tools aren't available, say so in one line and ask the user to enable the reddit-scout connector for this chat. Don't fall back to web search; it returns stale, undated results.
 
@@ -90,7 +90,12 @@ Also:
 
 ### Pekin lookup
 
-Restaurant pages live at `https://pekinthechef.com/{restaurant-slug}` (slug = name lowercased, spaces and punctuation removed, e.g. The Public Kitchen & Bar → `thepublickitchenbar`) and list every recipe; recipe pages are `/{restaurant-slug}/{recipe-slug}`. Fetch the restaurant page with WebFetch; try a couple of slug variants. If nothing is found, say "not on Pekin" and drop the post. (Interim method until a lookup tool is added to the connector.)
+Use the connector's `pekin_lookup` tool (restaurant and/or dish, optional city). It reads the Pekin database directly:
+- `note: "Restaurant not on Pekin."` → drop the post.
+- Restaurant found but `"No matching dish found."` → drop, or ask Rhys if a close dish works.
+- Dish found → call `pekin_recipe` with its URL and build the reply from those ingredients, ratios and steps, in Rhys's words.
+
+If `pekin_lookup` isn't available (connector not configured), fall back to fetching `https://pekinthechef.com/{restaurant-slug}` with WebFetch (slug = name lowercased, spaces and punctuation removed, e.g. The Public Kitchen & Bar → `thepublickitchenbar`).
 
 ### Rhys's voice
 
